@@ -23,11 +23,12 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
         setError(null);
         setSuccessMessage(null);
 
-        if (!formData.title.trim() || !formData.due_date) {
+        if (!formData.title.trim().trim() || !formData.due_date) {
             setError('Title and due date are required.');
             return;
         }
-        try {
+        
+        
             const payload = { 
                 ...formData, 
                 due_date: new Date(formData.due_date).toISOString(),
@@ -35,11 +36,17 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
             const url = isEdit 
             ? `${API_BASE}/tasks/${task.id}` : `${API_BASE}/tasks`;
 
-            const response = await axios({
-                method, url,
-                data: payload,
+            try {
+            let response; 
+            if (isEdit) {
+                response = await axios.put(url, payload, {
                 headers: { 'Content-Type': 'application/json' },
             });
+        }else {
+            response = await axios.post(url, payload, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
             setSuccessMessage(`Task ${isEdit ? 'updated' : 'created'} (status: ${response.status})`);
             await refreshTasks();
             setTimeout(() => setCurrentView('List'), 500);
