@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const API_BASE = process.env.React_APP_API_URL || 'http://localhost:3000/api';
+const API_BASE = process.env.React_APP_API_URL || 'http://localhost:4000/api';
 
 export default function TaskList({ tasks, setCurrentView, setSelectedTask, refreshTasks, }) {
     const handleDelete = async (id) => {

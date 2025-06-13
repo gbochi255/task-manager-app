@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const API_BASE = process.env.React_APP_API_URL || 'http://localhost:3000/api';
+const API_BASE = process.env.React_APP_API_URL || 'http://localhost:4000/api';
 
 export default function TaskForm({ task, setCurrentView, refreshTasks }) {
     const isEdit = Boolean(task);
@@ -30,22 +30,22 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
         
         
             const payload = { 
-                ...formData, 
+                title: formData.title,
+                description: formData.description,
+                status: formData.status, 
                 due_date: new Date(formData.due_date).toISOString(),
             };
+            try {
             const url = isEdit 
             ? `${API_BASE}/tasks/${task.id}` : `${API_BASE}/tasks`;
 
-            try {
+            
             let response; 
             if (isEdit) {
-                response = await axios.put(url, payload, {
-                headers: { 'Content-Type': 'application/json' },
-            });
-        }else {
-            response = await axios.post(url, payload, {
-                headers: { 'Content-Type': 'application/json' },
-            });
+                response = await axios.put(url, payload);
+                    
+            }else {
+            response = await axios.post(url, payload);
         }
             setSuccessMessage(`Task ${isEdit ? 'updated' : 'created'} (status: ${response.status})`);
             await refreshTasks();
