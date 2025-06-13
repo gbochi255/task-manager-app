@@ -1,33 +1,47 @@
 import React from 'react';
 import axios from 'axios';
 
-const TaskList = ({ tasks, setCurrentView, setSelectedTask, refreshTasks }) => {
-    const handleDelete = (id) => {
+const API_BASE = process.env.React_APP_API_URL || 'http://localhost:3000/api';
+
+export default function TaskList({ tasks, setCurrentView, setSelectedTask, refreshTasks, }) {
+    const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this task?:')) {
-            axios.delete(`http://localhost:3000/tasks/${id}`)
-            .then(() => refreshTasks())
-            .catch(error => console.error('Error deleting tasks:', error));
+            return;
         }
-    };
+        try{
+            const res = await axios.delete(`${API_BASE}/tasks/${id}`);
+            console.log('Deleted task, status:', res.status);
+            await refreshTasks();
+        }catch (err){
+            console.error('Error Deleting Task:', err);
+            alert(err.response?.data?.error || 'Delete failed');
+        }
+            
+       };
     return (
-        <div>
-            <h1 className='text-2xl font-bold mb-4'>Task List</h1>
+        <div className='list-container'>
+            <h1 className="list-heading">Task List</h1>
             <button 
-                className='mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600-'
+                className="create-button"
                 onClick={() => setCurrentView('create')} >Create New Task</button>
-                <ul className='space-y-2'>
+                {tasks.length === 0 ? (
+                    <p>No task found.</p>
+                ) : (
+                
+                <ul className="task-list">
                     {tasks.map(task => (
-                        <li key={task.id} className='flex justify-between items-center p-2 border-b'>
-                            <span className='cursor-pointer text-blue-500 hover:underline'
-                            onClick={() =>{
+                        <li key={task.id} className="task-item">
+                            <span className="task-title"
+                            onClick={() => {
                                 setSelectedTask(task);
                                 setCurrentView('detail');
-                            }}>{task.title}</span>
-                            <div>
+                            }}>
+                                {task.title}</span>
+                            <div className="task-actions">
                                 <button
-                                className='text-red-500 mr-2'
+                                className="delete-btn"
                                 onClick={() => handleDelete(task.id)}>Delete</button>
-                                <button className='text-blue-500'
+                                <button className="edit-btn"
                                 onClick={() => {
                                     setSelectedTask(task);
                                     setCurrentView('edit');
@@ -36,7 +50,7 @@ const TaskList = ({ tasks, setCurrentView, setSelectedTask, refreshTasks }) => {
                         </li>
                     ))}
                 </ul>
+                )}
         </div>
     );
-};
-export default TaskList;
+}

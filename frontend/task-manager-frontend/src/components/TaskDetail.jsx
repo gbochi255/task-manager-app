@@ -1,15 +1,16 @@
 import React from "react";
 
-const TaskDetail = ({ task, setCurrentView }) => {
+export default function TaskDetail({ task, setCurrentView }) {
     return (
-        <div>
-        <button className="mb-4 text-blue-500 hover:underline"
+        <div className="detail-container">
+        <button className="back-button"
         onClick={() => setCurrentView('list')}>Back to List</button>
-        <h1 className="text-2xl font-bold mb-2">{task.title}</h1>
-        <p className="mb-2">{task.description || 'No description'}</p>
-        <p className="mb-2">Status: <span className="font-semibold">{task.status}</span></p>
-        <p>Due Date: <span className="font-semibold">{new Date(task.due_date).toLocaleDateString()}</span></p>
+        <h1 className="detail-heading">{task.title}</h1>
+        <p>{task.description || 'No description available.'}</p>
+        <p><strong>Status: </strong>{''}
+        <span className="detail-status">{task.status}</span></p>
+        <p><strong>Due Date:</strong>{''} 
+        <span className="detail-due">{new Date(task.due_date).toLocaleDateString()}</span></p>
     </div>
     );
 };
-export default TaskDetail;
