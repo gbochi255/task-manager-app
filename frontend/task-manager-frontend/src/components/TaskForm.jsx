@@ -9,21 +9,21 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
         title: task?.title || '',
         description: task?.description || '',
         status: task?.status || 'pending',
-        due_date: task ? new Date(task.due_date).toISOString().slice(0, 16) : '',
+        due_date: task ? new Date(task.due_date_time).toISOString().slice(0,16) : new Date().toISOString().slice(0,16),
     });
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
 
     const handleChange = async (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData(formData => ({ ...formData, [name]: value }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setSuccessMessage(null);
 
-        if (!formData.title.trim().trim() || !formData.due_date) {
+        if (!formData.title.trim().trim() || !formData.due_date_time) {
             setError('Title and due date are required.');
             return;
         }
@@ -33,7 +33,7 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
                 title: formData.title,
                 description: formData.description,
                 status: formData.status, 
-                due_date: new Date(formData.due_date).toISOString(),
+                due_date: new Date(formData.due_date_time).toISOString(),
             };
             try {
             const url = isEdit 
@@ -51,8 +51,19 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
             await refreshTasks();
             setTimeout(() => setCurrentView('List'), 500);
         }catch (err) {
-            console.error('Error saving task:', err);
-            setError(err.response?.data?.error || err.message);
+            console.error('Error saving task (raw):', err);
+                const status = err?.response?.status;
+                const data = err?.response?.data;
+                console.error('Parsed error details:', JSON.stringify({ status, data }), null, 2);
+            
+            const backendError = 
+            typeof data?.error === 'string'
+            ? data.error : Array.isArray(data?.errors)
+            ? data.errors.map((e) => e.message).join('; ')
+            : null;
+        const message = backendError || err?.message || 'An unknown error occurred';
+            
+            setError(message);
         }
     };
     return (
@@ -93,8 +104,8 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
                 </select>
 
                 <input type="datetime-local"
-                name="due_date"
-                value={formData.due_date}
+                name="due_date_time"
+                value={formData.due_date_date}
                 onChange={handleChange}
                 className="form-input" required />
                 

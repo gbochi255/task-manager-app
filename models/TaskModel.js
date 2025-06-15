@@ -1,10 +1,10 @@
 const pool = require('../db/connection');
 
-async function  createTask({ title, description, status, due_date }) {
+async function  createTask({ title, description, status, due_date_time }) {
     const result = await pool.query( 
-        `INSERT INTO tasks (title, description, status, due_date) 
+        `INSERT INTO tasks (title, description, status, due_date_time) 
     VALUES ($1, $2, $3, $4) RETURNING *`,
-    [title, description, status, due_date]
+    [title, description, status, due_date_time]
     );
     return result.rows[0];
 };
@@ -15,7 +15,7 @@ async function findTaskById(id) {
 };
 
 async function findAllTasks() {
-    const result = await pool.query(`SELECT * FROM tasks ORDER BY due_date ASC`);
+    const result = await pool.query(`SELECT * FROM tasks ORDER BY due_date_time ASC`);
     return result.rows;
 };
 

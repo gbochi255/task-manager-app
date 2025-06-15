@@ -7,7 +7,7 @@
 require('dotenv').config();
 const app = require("./app.js")
 
-const { PORT = 9000 } = process.env
+const { PORT = 4000 } = process.env
 const ENV = process.env.PGDATABASE
 
 app.listen(PORT, () => console.log(`server running on ${ENV}`));

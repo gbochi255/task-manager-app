@@ -13,7 +13,7 @@ const App = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/tasks')
+    axios.get('/api/tasks')
     .then(response => {
       setTasks(response.data);
       setLoading(false);
@@ -26,7 +26,7 @@ const App = () => {
 
   const refreshTasks = () => {
     setLoading(true);
-    axios.get('http://localhost:3000/tasks')
+    axios.get('/api/tasks')
     .then(response => {
       setTasks(response.data);
       setLoading(false);
