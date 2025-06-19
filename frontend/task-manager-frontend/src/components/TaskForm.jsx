@@ -9,8 +9,10 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
         title: task?.title || '',
         description: task?.description || '',
         status: task?.status || 'pending',
-        due_date: task ? new Date(task.due_date_time).toISOString().slice(0,16) : new Date().toISOString().slice(0,16),
-    });
+        due_date_time: task 
+        ? new Date(task.due_date_time).toISOString().slice(0,16)
+        : new Date().toISOString().slice(0,16),
+        });
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
 
@@ -33,32 +35,35 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
                 title: formData.title,
                 description: formData.description,
                 status: formData.status, 
-                due_date: new Date(formData.due_date_time).toISOString(),
+                due_date_time: new Date(formData.due_date_time).toISOString(),
             };
             try {
             const url = isEdit 
-            ? `${API_BASE}/tasks/${task.id}` : `${API_BASE}/tasks`;
+            ? `${API_BASE}/tasks/${task.id}` 
+            : `${API_BASE}/tasks`;
 
             
             let response; 
-            if (isEdit) {
+                if (isEdit) {
                 response = await axios.put(url, payload);
-                    
-            }else {
+                }else {
             response = await axios.post(url, payload);
         }
-            setSuccessMessage(`Task ${isEdit ? 'updated' : 'created'} (status: ${response.status})`);
+            setSuccessMessage(
+                `Task ${isEdit ? 'updated' : 'created'} (status: ${response.status})`
+            );
             await refreshTasks();
-            setTimeout(() => setCurrentView('List'), 500);
+            setTimeout(() => setCurrentView('list'), 500);
         }catch (err) {
             console.error('Error saving task (raw):', err);
                 const status = err?.response?.status;
                 const data = err?.response?.data;
-                console.error('Parsed error details:', JSON.stringify({ status, data }), null, 2);
+                console.error('Parsed error details:', JSON.stringify({ status, data }, null, 2));
             
             const backendError = 
             typeof data?.error === 'string'
-            ? data.error : Array.isArray(data?.errors)
+            ? data.error 
+            : Array.isArray(data?.errors)
             ? data.errors.map((e) => e.message).join('; ')
             : null;
         const message = backendError || err?.message || 'An unknown error occurred';
@@ -99,13 +104,13 @@ export default function TaskForm({ task, setCurrentView, refreshTasks }) {
                 onChange={handleChange}
                 className="form-select">
                     <option value="pending">Pending</option>
-                    <option value="in progress">In Progress</option>
+                    <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                 </select>
 
                 <input type="datetime-local"
                 name="due_date_time"
-                value={formData.due_date_date}
+                value={formData.due_date_time}
                 onChange={handleChange}
                 className="form-input" required />
                 

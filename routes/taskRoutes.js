@@ -10,17 +10,18 @@ const validateTaskBody = [
     body('due_date_time').isISO8601().withMessage('Due_date_time must be a valid ISO date'),
     body('status')
     .optional()
-    .isIn(["pending", "in progress", "completed"]).withMessage('Status is required'),
+    .isIn(["pending", "in_progress", "completed"]).withMessage('Status is required'),
     ];
 
     const validateTaskId = [param("id").isInt().withMessage("Task Id must be an integer"),];
     
+    //const { validationResult } =require('express-validator');
     function handleValidationErrors(req, res, next) {
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            //return res.status(400).json({ error:errors.array() });
-            const first = errors.array()[0];
-            return res.status(400).json({ error: first.message });
+            
+            const first = errors.array()[0].message;
+            return res.status(400).json({ error: first.msg });
         }
         next();
     }
@@ -28,11 +29,7 @@ const validateTaskBody = [
     router.get('/', getAllTasksHandler);
     router.get('/:id', validateTaskId, handleValidationErrors, getTaskByIdHandler)
 
-    /*router.get('/:id', validateTaskId, (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-        getTaskByIdHandler(req, res, next);
-    });*/
+    
 
 router.post('/', validateTaskBody, handleValidationErrors, createTaskHandler);
 

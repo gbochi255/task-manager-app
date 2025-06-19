@@ -3,7 +3,8 @@ const pool = require('../db/connection');
 async function  createTask({ title, description, status, due_date_time }) {
     const result = await pool.query( 
         `INSERT INTO tasks (title, description, status, due_date_time) 
-    VALUES ($1, $2, $3, $4) RETURNING *`,
+    VALUES ($1, $2, $3, $4) 
+    RETURNING id, title, description, status, due_date_time `,
     [title, description, status, due_date_time]
     );
     return result.rows[0];

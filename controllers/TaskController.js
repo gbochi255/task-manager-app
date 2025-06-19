@@ -3,7 +3,8 @@ require('../models/TaskModel');
 
 
 const createTaskHandler = async (req, res) => {
-    console.log('createTaskHandler req.body =', req.body);
+    console.log('[createTaskHandler] headers:', req.headers);
+    console.log('createTaskHandler req.body:', req.body);
     const { title, description, status, due_date_time } = req.body;
     if(!title || !due_date_time) {
         return res.status(400).json({  error: "Title and due_date are required" });
@@ -13,7 +14,8 @@ const createTaskHandler = async (req, res) => {
         res.status(201).json(newTask);
     }catch(err) {
         console.error("Error in createTaskHandler", err);
-        res.status(500).json({ error: 'Failed to create task' });
+        console.error("err.code / err.detail:", err.code, err.detail);
+        return res.status(500).json({ error: 'Failed to create task' });
     }
 };
 
